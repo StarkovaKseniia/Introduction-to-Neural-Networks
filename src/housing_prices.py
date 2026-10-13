@@ -16,8 +16,8 @@ def load_data():
     """
     housing = fetch_california_housing(as_frame=True)
     df = housing.frame
-    if 'MedHouseValue' in df.columns:
-        df = df.rename(columns={'MedHouseValue': 'Price'})
+    if 'MedHouseVal' in df.columns:
+        df = df.rename(columns={'MedHouseVal': 'Price'})
     return df
 
 def preprocess_data(df):
