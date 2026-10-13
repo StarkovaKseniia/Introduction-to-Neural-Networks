@@ -19,7 +19,9 @@ def generate_training_data(seed=42, num_samples=500):
     x_train (np.ndarray): Input training data.
     y_train (np.ndarray): Output training data.
     """
-    # ...write your code here...
+    np.random.seed(seed)
+    x_train = np.random.uniform(-10, 10, (num_samples, 1))
+    y_train = true_function(x_train)
     return x_train, y_train
 
 def build_model():
@@ -29,7 +31,12 @@ def build_model():
     Returns:
     model (keras.Model): Neural network model.
     """
-    # ...write your code here...
+    model = keras.Sequential([
+        layers.Dense(64, activation='relu', input_shape=(1,)),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(1)
+    ])
+    model.compile(optimizer='adam', loss='mean_squared_error')
     return model
 
 def train_model(model, x_train, y_train, epochs=100, batch_size=32):
@@ -46,7 +53,7 @@ def train_model(model, x_train, y_train, epochs=100, batch_size=32):
     Returns:
     history: Training history.
     """
-    # ...write your code here...
+    history = model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, verbose=0)
     return history
 
 def evaluate_model(model, x_test):
@@ -60,8 +67,8 @@ def evaluate_model(model, x_test):
     Returns:
     y_pred (np.ndarray): Predicted output
     """
-    # ...write your code here...
-    return output
+    y_pred = model.predict(x_test)
+    return y_pred
 
 def visualize_results(x_train, y_train, x_test, y_pred):
     """Visualize the training data and model predictions."""
@@ -86,7 +93,8 @@ def predict(model, x_new):
     Returns:
     predicted_value (float): Predicted output value.
     """
-    # ...write your code here...
+    x_new_array = np.array([[x_new]])
+    predicted_value = model.predict(x_new_array, verbose=0)[0][0]
     return predicted_value
 
 # Main Execution
