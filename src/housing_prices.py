@@ -14,7 +14,10 @@ def load_data():
     Returns:
     df (pd.DataFrame): California housing dataset.
     """
-    # ...write your code here...
+    housing = fetch_california_housing(as_frame=True)
+    df = housing.frame
+    if 'MedHouseValue' in df.columns:
+        df = df.rename(columns={'MedHouseValue': 'Price'})
     return df
 
 def preprocess_data(df):
@@ -36,11 +39,12 @@ def preprocess_data(df):
     y = df['Price']
     
     # Split into training and testing sets
-    # ...write your code here...
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
     # Standardize numerical features
     scaler = StandardScaler()
-    # ...write your code here...
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
     
     return X_train_scaled, X_test_scaled, y_train, y_test, scaler
 
@@ -54,7 +58,13 @@ def build_model(input_shape):
     Returns:
     model (Sequential): Compiled neural network model.
     """
-    # ...write your code here...
+    model = Sequential([
+        Dense(64, activation='relu', input_shape=(input_shape,)),
+        Dense(32, activation='relu'),
+        Dense(1)
+    ])
+    
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
     return model
 
 def train_model(model, X_train, y_train, X_test, y_test, epochs=50, batch_size=32):
@@ -73,7 +83,13 @@ def train_model(model, X_train, y_train, X_test, y_test, epochs=50, batch_size=3
     Returns:
     history: Training history.
     """
-    # ...write your code here...
+    history = model.fit(
+        X_train, y_train,
+        validation_data=(X_test, y_test),
+        epochs=epochs,
+        batch_size=batch_size,
+        verbose=1
+    )
     return history
 
 def evaluate_model(model, X_test, y_test):
@@ -89,7 +105,7 @@ def evaluate_model(model, X_test, y_test):
     loss (float): Test loss.
     mae (float): Test mean absolute error.
     """
-    # ...write your code here...
+    loss, mae = model.evaluate(X_test, y_test, verbose=0)
     return loss, mae
 
 def plot_loss(history):
@@ -125,15 +141,15 @@ def predict_house_price(model, house_features, scaler):
     predicted_price (float): Predicted house price.
     """
     # Convert input to a NumPy array and reshape for model
-    # ...write your code here...
+    features_array = np.array(house_features).reshape(1, -1)
 
     # Scale the input features using the same scaler used in training
-    # ...write your code here...
+    features_scaled = scaler.transform(features_array)
 
     # Predict price
-    # ...write your code here...
+    predicted_price = model.predict(features_scaled)
     
-    return predicted_price
+    return predicted_price[0][0]
 
 # Main execution
 if __name__ == "__main__":
